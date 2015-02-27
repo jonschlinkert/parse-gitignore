@@ -14,8 +14,18 @@ npm i parse-gitignore --save
 var gitignore = require('parse-gitignore');
 
 // pass a string
-gitignore(fs.readFileSync('.gitignore', 'utf8'));
+var str = fs.readFileSync('.gitignore', 'utf8');
+gitignore(str);
 //=> ['*.DS_Store', 'node_modules', ...]
+```
+
+**Pass additional patterns**
+
+Since the function already does unique-ifying, you can optionally pass an array of patterns to combine additional patterns to whatever is in `.gitignore` and get an array of unique patterns:
+
+```js
+gitignore(str, ['foo', 'bar']);
+//=> ['*.DS_Store', 'node_modules', 'foo', 'bar', ...]
 ```
 
 ## Run tests
