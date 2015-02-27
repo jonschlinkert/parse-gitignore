@@ -1,6 +1,6 @@
 # parse-gitignore [![NPM version](https://badge.fury.io/js/parse-gitignore.svg)](http://badge.fury.io/js/parse-gitignore)  [![Build Status](https://travis-ci.org/jonschlinkert/parse-gitignore.svg)](https://travis-ci.org/jonschlinkert/parse-gitignore) 
 
-> Parse a gitignore file into an array of patterns.
+> Parse a gitignore file into an array of patterns. Comments and empty lines are stripped.
 
 ## Install with [npm](npmjs.org)
 
