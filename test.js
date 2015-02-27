@@ -24,4 +24,8 @@ describe('gitignore', function () {
     gitignore(read('c.txt')).should.containDeep(['*.orig', '*.out', '*.pid', '*.rej', '*.seed', '*.swo', '*.sw']);
     gitignore(read('c.txt')).should.not.containDeep(['# OS or Editor folders']);
   });
+
+  it('should uniquify the results when an array of patterns is passed:', function () {
+    gitignore(read('d.txt'), ['d']).should.eql(['a', 'b', 'c', 'd']);
+  });
 });
