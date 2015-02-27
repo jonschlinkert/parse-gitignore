@@ -11,12 +11,12 @@ npm i parse-gitignore --save
 ## Usage
 
 ```js
-var parseGitignore = require('parse-gitignore');
+var gitignore = require('parse-gitignore');
+
+// pass a string
+gitignore(fs.readFileSync('.gitignore', 'utf8'));
+//=> ['*.DS_Store', 'node_modules', ...]
 ```
-
-## API
-
-
 
 ## Run tests
 
