@@ -33,6 +33,8 @@ Pull requests and stars are always welcome. For bugs and feature requests, [plea
 
 **Jon Schlinkert**
  
++ [github/jonschlinkert](https://github.com/jonschlinkert)
++ [twitter/jonschlinkert](http://twitter.com/jonschlinkert) 
 
 ## License
 Copyright (c) 2015 Jon Schlinkert  
