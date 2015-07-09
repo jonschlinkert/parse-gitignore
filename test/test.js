@@ -9,11 +9,11 @@
 
 var fs = require('fs');
 var should = require('should');
-var gitignore = require('./');
+var gitignore = require('../');
 
 describe('gitignore', function () {
   it('should parse a gitignore file and return an array:', function () {
-    gitignore('fixtures/a.txt').should.containDeep([
+    gitignore('test/fixtures/a.txt').should.containDeep([
      'temp',
       'tmp',
      'TODO.md',
@@ -22,7 +22,7 @@ describe('gitignore', function () {
   });
 
   it('should not include code comments:', function () {
-    gitignore('fixtures/c.txt').should.containDeep([
+    gitignore('test/fixtures/c.txt').should.containDeep([
      '*.orig',
      '*.out',
      '*.pid',
@@ -31,19 +31,19 @@ describe('gitignore', function () {
      '*.swo',
      '*.sw'
     ]);
-    gitignore('fixtures/c.txt').should.not.containDeep(['# OS or Editor folders']);
+    gitignore('test/fixtures/c.txt').should.not.containDeep(['# OS or Editor folders']);
   });
 
   it('should uniquify the results when an array of patterns is passed:', function () {
-    gitignore('fixtures/d.txt', ['d']).should.eql([
-     'a/*',
+    gitignore('test/fixtures/d.txt', ['d']).should.eql([
      'a',
-     'b/*',
+     'a/**',
      'b',
-     'c/*',
+     'b/**',
      'c',
-     'd/*',
-     'd'
+     'c/**',
+     'd',
+     'd/**'
     ]);
   });
 });
