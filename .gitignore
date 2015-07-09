@@ -1,4 +1,4 @@
-*.DS_store
+.DS_store
 *.sublime-*
 _gh_pages
 bower_components
