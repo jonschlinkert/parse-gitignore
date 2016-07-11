@@ -10,7 +10,9 @@
   },
   "license": "MIT",
   "files": [
-    "index.js"
+    "index.js",
+    "LICENSE",
+    "README.md"
   ],
   "main": "index.js",
   "engines": {
@@ -19,17 +21,37 @@
   "scripts": {
     "test": "mocha"
   },
+  "dependencies": {
+    "array-unique": "^0.2.1",
+    "is-glob": "^2.0.1"
+  },
   "devDependencies": {
-    "should": "^5.0.1"
+    "gulp-format-md": "^0.1.9",
+    "should": "^9.0.2"
   },
   "keywords": [
     "gitignore",
     "ignore",
     "parse"
   ],
-  "dependencies": {
-    "ends-with": "^0.2.0",
-    "is-glob": "^2.0.0",
-    "starts-with": "^1.0.0"
+  "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "lint": {
+      "reflinks": true
+    },
+    "related": {
+      "list": []
+    },
+    "reflinks": [
+      "verb",
+      "verb-generate-readme"
+    ]
   }
 }
