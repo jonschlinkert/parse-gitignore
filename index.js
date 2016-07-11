@@ -9,6 +9,7 @@
 
 var fs = require('fs');
 var isGlob = require('is-glob');
+var unique = require('array-unique');
 var cache = {};
 
 
@@ -24,11 +25,19 @@ function gitignore(fp, patterns, options) {
     patterns = [];
   }
 
+  options = options || {};
   var str = fs.readFileSync(fp, 'utf8');
-  var lines = str.split(/\r\n?|\n/).concat(patterns || []);
-  var res = gitignore.parse(lines, options || {});
-  return (cache[fp] = res);
+  var lines = str.split(/\r\n|\n/).concat(patterns || []);
+  var arr = unique(gitignore.parse(lines, options));
+  arr.sort();
+
+  if (options.cache !== false) {
+    gitignore.cache[fp] = arr;
+  }
+  return arr;
 }
+
+gitignore.cache = cache;
 
 gitignore.parse = function parse(arr, opts) {
   arr = arrayify(arr);
