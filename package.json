@@ -1,7 +1,7 @@
 {
   "name": "parse-gitignore",
   "description": "Parse a gitignore file into an array of patterns. Comments and empty lines are stripped.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "homepage": "https://github.com/jonschlinkert/parse-gitignore",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/parse-gitignore",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "gulp-format-md": "^0.1.9",
+    "mocha": "^2.5.3",
     "should": "^9.0.2"
   },
   "keywords": [
