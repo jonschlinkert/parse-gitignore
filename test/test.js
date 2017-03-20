@@ -32,10 +32,8 @@ describe('gitignore', function () {
     gitignore('test/fixtures/d.txt', ['d']).should.eql([
      'a',
      'a/**',
-     'b',
-     'b/**',
-     'c',
-     'c/**',
+     '!b',
+     '!!c',
      'd',
      'd/**'
     ]);

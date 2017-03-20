@@ -29,7 +29,6 @@ function gitignore(fp, patterns, options) {
   var str = fs.readFileSync(fp, 'utf8');
   var lines = str.split(/\r\n|\n/).concat(patterns || []);
   var arr = unique(gitignore.parse(lines, options));
-  arr.sort();
 
   if (options.cache !== false) {
     gitignore.cache[fp] = arr;
