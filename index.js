@@ -1,8 +1,8 @@
 /*!
  * parse-gitignore <https://github.com/jonschlinkert/parse-gitignore>
  *
- * Copyright (c) 2015, Jon Schlinkert.
- * Licensed under the MIT License.
+ * Copyright (c) 2015, 2017, Jon Schlinkert.
+ * Released under the MIT License.
  */
 
 'use strict';
@@ -11,7 +11,6 @@ var fs = require('fs');
 var isGlob = require('is-glob');
 var unique = require('array-unique');
 var cache = {};
-
 
 function gitignore(fp, patterns, options) {
   if (!fp || !fs.existsSync(fp)) return [];

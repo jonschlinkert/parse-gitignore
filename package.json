@@ -4,15 +4,17 @@
   "version": "0.3.1",
   "homepage": "https://github.com/jonschlinkert/parse-gitignore",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "contributors": [
+    "Jon Schlinkert <jon.schlinkert@sellside.com> (http://twitter.com/jonschlinkert)",
+    "Michael Mayer <michael@schnittstabil.de> (http://schnittstabil.de)"
+  ],
   "repository": "jonschlinkert/parse-gitignore",
   "bugs": {
     "url": "https://github.com/jonschlinkert/parse-gitignore/issues"
   },
   "license": "MIT",
   "files": [
-    "index.js",
-    "LICENSE",
-    "README.md"
+    "index.js"
   ],
   "main": "index.js",
   "engines": {
@@ -22,13 +24,15 @@
     "test": "mocha"
   },
   "dependencies": {
-    "array-unique": "^0.2.1",
-    "is-glob": "^2.0.1"
+    "array-unique": "^0.3.2",
+    "is-glob": "^3.1.0"
   },
   "devDependencies": {
-    "gulp-format-md": "^0.1.9",
-    "mocha": "^2.5.3",
-    "should": "^9.0.2"
+    "glob-fs": "^0.1.6",
+    "gulp-format-md": "^0.1.11",
+    "micromatch": "^2.3.11",
+    "mocha": "^3.2.0",
+    "should": "^11.2.1"
   },
   "keywords": [
     "gitignore",
@@ -44,15 +48,18 @@
     "plugins": [
       "gulp-format-md"
     ],
-    "lint": {
-      "reflinks": true
-    },
     "related": {
-      "list": []
+      "list": [
+        "parse-author",
+        "parse-git-config"
+      ]
     },
     "reflinks": [
       "verb",
       "verb-generate-readme"
-    ]
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }
