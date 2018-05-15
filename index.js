@@ -72,6 +72,9 @@ gitignore.toGlob = function toGlob(str) {
 
   if (stats.first === '/') {
     str = str.slice(1);
+  } 
+  if (!str.match(/^[\*\.\\]*\//)) {
+    str = '**/' + str;
   }
 
   if (/\w\/[*]{2}\/\w/.test(str)) {
