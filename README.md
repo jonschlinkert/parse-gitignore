@@ -29,6 +29,15 @@ gitignore('.gitignore', ['foo', 'bar']);
 //=> ['*.DS_Store', 'node_modules', 'foo', 'bar', ...]
 ```
 
+**Configure options**
+
+You can also pass options to the function to change its behavior. By default, the results of parsing a file are cached. To disable this, set the `cache` option:
+
+```js
+gitignore('.gitignore', [], { cache: false });
+//=> ['*.DS_Store', 'node_modules', ...]
+```
+
 ## About
 
 ### Related projects
