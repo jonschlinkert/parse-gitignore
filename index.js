@@ -70,6 +70,10 @@ gitignore.toGlob = function toGlob(str) {
     stats.first = str.charAt(0);
   }
 
+  if (!/^[\*\.\\]*\//.test(str) && !/\*$/.test(str)) {
+    str = '**/' + str;
+  }
+
   if (stats.first === '/') {
     str = str.slice(1);
   }
@@ -78,7 +82,7 @@ gitignore.toGlob = function toGlob(str) {
     str += '|' + str.split('/**/').join('/');
   }
 
-  if (/^[\w.]/.test(str) && /\w$/.test(str) && !stats.isGlob) {
+  if (/^(\*\*\/)?[\w.]/.test(str) && /\w$/.test(str) && !stats.isGlob) {
     str += '|' + str + '/**';
 
   } else if (/\/$/.test(str)) {

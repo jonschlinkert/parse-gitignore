@@ -23,7 +23,7 @@ describe('to glob', function () {
 
   describe('patterns', function () {
     it('should add a glob for non-globs', function () {
-      toGlob('a').patterns.should.eql(['a', 'a/**']);
+      toGlob('a').patterns.should.eql(['**/a', '**/a/**']);
     });
 
     it('should remove leading slashes', function () {
@@ -36,13 +36,13 @@ describe('to glob', function () {
     });
 
     it('should add a slash and globstar to non-globs', function () {
-      toGlob('.foo').patterns.should.eql(['.foo', '.foo/**']);
+      toGlob('.foo').patterns.should.eql(['**/.foo', '**/.foo/**']);
     });
 
     it('should add a trailing globstar when the last character is a slash.', function () {
-      toGlob('.foo/').patterns.should.eql(['.foo/**']);
-      toGlob('foo/').patterns.should.eql(['foo/**']);
-      toGlob('a/*/').patterns.should.eql(['a/*/**']);
+      toGlob('.foo/').patterns.should.eql(['**/.foo/**']);
+      toGlob('foo/').patterns.should.eql(['**/foo/**']);
+      toGlob('a/*/').patterns.should.eql(['**/a/*/**']);
     });
   });
 });
