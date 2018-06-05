@@ -1,7 +1,7 @@
 /*!
  * parse-gitignore <https://github.com/jonschlinkert/parse-gitignore>
  *
- * Copyright (c) 2015, 2017, Jon Schlinkert.
+ * Copyright (c) 2015-present, Jon Schlinkert.
  * Released under the MIT License.
  */
 

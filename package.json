@@ -5,8 +5,8 @@
   "homepage": "https://github.com/jonschlinkert/parse-gitignore",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "contributors": [
-    "Jon Schlinkert <jon.schlinkert@sellside.com> (http://twitter.com/jonschlinkert)",
-    "Michael Mayer <michael@schnittstabil.de> (http://schnittstabil.de)"
+    "Jon Schlinkert (http://twitter.com/jonschlinkert)",
+    "Michael Mayer (http://schnittstabil.de)"
   ],
   "repository": "jonschlinkert/parse-gitignore",
   "bugs": {
