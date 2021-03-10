@@ -22,13 +22,36 @@ As of v1.0, parse-gitignore was refactored and simplified down to less than ~50 
 
 ## Usage
 
+### Async/await
+```js
+const fs = require('fs');
+const parse = require('parse-gitignore');
+
+(async () => {
+  let parsed
+
+  try {
+    // pass the contents of a .gitignore file as a string or buffer 
+    parsed = await parse(fs.readFileSync('foo/bar/.gitignore'));
+  } catch (exception) {
+    // Handle exception...
+  }
+
+  console.log(parsed)
+  //=> ['*.DS_Store', 'node_modules', ...];
+})()
+```
+
+### Promises
 ```js
 const fs = require('fs');
 const parse = require('parse-gitignore');
 
 // pass the contents of a .gitignore file as a string or buffer 
-console.log(parse(fs.readFileSync('foo/bar/.gitignore')));
-//=> ['*.DS_Store', 'node_modules', ...];
+parse(fs.readFileSync('foo/bar/.gitignore')).then((parsed) => {
+  console.log(parsed)
+  //=> ['*.DS_Store', 'node_modules', ...];
+}).catch((error) => { /* Handle error... */ })
 ```
 
 ## Example
