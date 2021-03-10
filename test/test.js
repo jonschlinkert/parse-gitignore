@@ -8,8 +8,8 @@ const parse = require('../');
 const read = name => fs.readFileSync(path.join(__dirname, 'fixtures', name));
 
 describe('gitignore', () => {
-  it('should parse a gitignore file and return an array:', () => {
-    assert.deepEqual(parse(read('_gitignore')), [
+  it('should parse a gitignore file asynchronously and resolve to an array:', async() => {
+    assert.deepEqual(await parse(read('_gitignore')), [
       'logs',
       '*.log',
       'npm-debug.log*',

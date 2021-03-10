@@ -13,12 +13,12 @@ const gitignore = input => {
     .filter(l => l.trim() !== '' && l.charAt(0) !== '#');
 };
 
-gitignore.parse = (input, fn = line => line) => {
+gitignore.parse = async(input, fn = line => line) => {
   let lines = input.toString().split(/\r?\n/);
   let state = { patterns: [], sections: [] };
   let section = { name: 'default', patterns: [] };
 
-  for (let line of lines) {
+  for await (let line of lines) {
     if (line.charAt(0) === '#') {
       section = { name: line.slice(1).trim(), patterns: []};
       state.sections.push(section);
