@@ -38,9 +38,9 @@ gitignore.format = (section) => {
   return `# ${section.name}\n${section.patterns.join('\n')}\n\n`;
 };
 
-gitignore.stringify = (sections, fn = gitignore.format) => {
+gitignore.stringify = async(sections, fn = gitignore.format) => {
   let result = '';
-  for (let section of [].concat(sections)) result += fn(section);
+  for await (let section of [].concat(sections)) result += fn(section);
   return result.trim();
 };
 
