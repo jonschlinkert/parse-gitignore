@@ -4,4 +4,4 @@ const gitignore = require('..');
 
 const filepath = path.join(__dirname, '../test/fixtures/_gitignore');
 
-console.log(JSON.stringify(gitignore.parse(fs.readFileSync(filepath)), null, 2));
+console.log(gitignore(fs.readFileSync(filepath)));

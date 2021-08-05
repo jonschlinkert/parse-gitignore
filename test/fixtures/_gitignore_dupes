@@ -10,3 +10,4 @@ pids
 *.pid
 *.seed
 *.pid.lock
+yarn-error.log*
