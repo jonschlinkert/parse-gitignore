@@ -18,3 +18,9 @@ pids
 *.seed
 *.pid.lock
 yarn-error.log
+
+# Logs
+other-debug.log
+other-debug.log
+other-debug.log
+yarn-debug.log

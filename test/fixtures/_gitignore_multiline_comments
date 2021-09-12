@@ -3,18 +3,20 @@ logs
 *.log
 npm-debug.log
 yarn-debug.log
-yarn-debug.log
-yarn-debug.log
 yarn-error.log
 
 # Runtime data
 pids
 *.pid
 *.pid
-*.pid
-*.pid
 *.log
-*.seed
 *.seed
 *.pid.lock
 yarn-error.log
+
+# Logs
+other-debug.log
+
+# An empty section
+# another section
+# and another section

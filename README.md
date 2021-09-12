@@ -26,7 +26,7 @@ As of v1.0, parse-gitignore was refactored and simplified down to less than ~50 
 const fs = require('fs');
 const parse = require('parse-gitignore');
 
-// pass the contents of a .gitignore file as a string or buffer 
+// pass the contents of a .gitignore file as a string or buffer
 console.log(parse(fs.readFileSync('foo/bar/.gitignore')));
 //=> ['*.DS_Store', 'node_modules', ...];
 ```
@@ -107,7 +107,7 @@ You might also be interested in these projects:
 
 ### Contributors
 
-| **Commits** | **Contributor** | 
+| **Commits** | **Contributor** |
 | --- | --- |
 | 33 | [jonschlinkert](https://github.com/jonschlinkert) |
 | 1 | [schnittstabil](https://github.com/schnittstabil) |

@@ -1,3 +1,9 @@
+####
+#
+# This is a header
+#
+####
+
 # Logs
 logs
 *.log
@@ -10,3 +16,6 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+# this is a header
+other_stuff

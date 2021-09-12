@@ -1,6 +1,5 @@
 /*!
  * parse-gitignore <https://github.com/jonschlinkert/parse-gitignore>
- *
  * Copyright (c) 2015-present, Jon Schlinkert.
  * Released under the MIT License.
  */
@@ -8,9 +7,12 @@
 'use strict';
 
 const fs = require('fs');
+const isObject = v => v !== null && typeof v === 'object' && !Array.isArray(v);
 
-const INVALID_PATH_CHARS_REGEX = /[<>:"|?*]/;
-const MAX_PATH_LENGTH = 260;
+// eslint-disable-next-line no-control-regex
+const INVALID_PATH_CHARS_REGEX = /[<>:"|?*\n\r\t\f\x00-\x1F]/;
+const GLOBSTAR_REGEX = /(?:^|\/)[*]{2}($|\/)/;
+const MAX_PATH_LENGTH = 260 - 12;
 
 const isValidPath = input => {
   if (typeof input === 'string') {
@@ -19,146 +21,225 @@ const isValidPath = input => {
   return false;
 };
 
-const split = str => String(str).split(/[\r\n]+/);
-const isBlank = str => str.trim() === '';
+const split = str => String(str).split(/\r\n?|\n/);
 const isComment = str => str.startsWith('#');
-const gitignore = input => {
-  if (isValidPath(input) && fs.existsSync(input)) return gitignore.file(input);
-  return split(input).filter(line => !isBlank(line) && !isComment(line));
+const isParsed = input => isObject(input) && input.patterns && input.sections;
+
+const patterns = input => {
+  return split(input).map(l => l.trim()).filter(line => line !== '' && !isComment(line));
 };
 
-gitignore.parse = (input, options = {}) => {
+const parse = (input, options = {}) => {
+  let filepath = options.path;
+
+  if (isParsed(input)) return input;
   if (isValidPath(input) && fs.existsSync(input)) {
-    return gitignore.parseFile(input);
+    filepath = input;
+    input = fs.readFileSync(input);
   }
 
   const lines = split(input);
-  let parsed = { patterns: [], sections: [] };
+  const names = new Map();
+
+  let parsed = { sections: [], patterns: [] };
   let section = { name: 'default', patterns: [] };
+  let prev;
 
   for (const line of lines) {
-    if (line.charAt(0) === '#') {
-      const [, hash, name] = /^(#+)(.*)$/.exec(line);
-      section = { name: name.trim(), level: hash.length, patterns: [] };
+    const value = line.trim();
+
+    if (value.startsWith('#')) {
+      const [, name] = /^#+\s*(.*)\s*$/.exec(value);
+
+      if (prev) {
+        names.delete(prev.name);
+        prev.comment += value ? `\n${value}` : '';
+        prev.name = name ? `${prev.name.trim()}\n${name.trim()}` : prev.name.trim();
+        names.set(prev.name.toLowerCase().trim(), prev);
+        continue;
+      }
+
+      section = { name: name.trim(), comment: value, patterns: [] };
+      names.set(section.name.toLowerCase(), section);
       parsed.sections.push(section);
+      prev = section;
       continue;
     }
 
-    if (line.trim() !== '') {
-      section.patterns.push(line.trim());
-      parsed.patterns.push(line.trim());
+    if (value !== '') {
+      section.patterns.push(value);
+      parsed.patterns.push(value);
     }
+
+    prev = null;
   }
 
-  if (options.dedupe !== false) {
-    parsed = gitignore.dedupe(parsed, { ...options, stringify: false });
+  if (options.dedupe === true || options.unique === true) {
+    parsed = dedupe(parsed, { ...options, format: false });
   }
 
+  parsed.path = filepath;
+  parsed.input = Buffer.from(input);
+  parsed.format = opts => format(parsed, { ...options, ...opts });
+  parsed.dedupe = opts => dedupe(parsed, { ...options, ...opts });
+  parsed.globs = opts => globs(parsed, { path: filepath, ...options, ...opts });
   return parsed;
 };
 
-gitignore.file = filepath => gitignore(fs.readFileSync(filepath));
+const parseFile = (filepath, options) => {
+  return parse(fs.readFileSync(filepath, 'utf8'), options);
+};
 
-gitignore.parseFile = filepath => gitignore.parse(fs.readFileSync(filepath));
+const dedupe = (input, options) => {
+  const parsed = parse(input, { ...options, dedupe: false });
 
-gitignore.dedupe = (parsed, options = {}) => {
-  const seen = { patterns: new Set(), sections: new Map(), all: new Set() };
-  const sections = [];
+  const names = new Map();
+  const res = { sections: [], patterns: new Set() };
+  let current;
 
-  if (typeof parsed === 'string') {
-    parsed = gitignore.parse(parsed);
+  // first, combine duplicate sections
+  for (const section of parsed.sections) {
+    const { name = '', comment, patterns } = section;
+    const key = name.trim().toLowerCase();
+
+    for (const pattern of patterns) {
+      res.patterns.add(pattern);
+    }
+
+    if (name && names.has(key)) {
+      current = names.get(key);
+      current.patterns = [...current.patterns, ...patterns];
+    } else {
+      current = { name, comment, patterns };
+      res.sections.push(current);
+      names.set(key, current);
+    }
   }
 
-  for (let i = 0; i < parsed.sections.length; i++) {
-    let section = parsed.sections[i];
+  // next, de-dupe patterns in each section
+  for (const section of res.sections) {
+    section.patterns = [...new Set(section.patterns)];
+  }
 
-    if (options.onSection) {
-      section = options.onSection(section);
-      if (section !== false) sections.push(section);
-      continue;
-    }
+  res.patterns = [...res.patterns];
+  return res;
+};
 
-    const existing = seen.sections.get(section.name);
+const glob = (pattern, options) => {
+  // Return if a glob pattern has already been specified for sub-directories
+  if (GLOBSTAR_REGEX.test(pattern)) {
+    return pattern;
+  }
 
-    if (existing) {
-      existing.patterns = [...new Set(existing.patterns.push(section.patterns))];
-      section = existing;
-    }
+  // If there is a separator at the beginning or middle (or both) of the pattern,
+  // then the pattern is relative to the directory level of the particular .gitignore
+  // file itself. Otherwise the pattern may also match at any level below the
+  // .gitignore level. relative paths only
+  let relative = false;
+  if (pattern.startsWith('/')) {
+    pattern = pattern.slice(1);
+    relative = true;
+  } else if (pattern.slice(1, pattern.length - 1).includes('/')) {
+    relative = true;
+  }
 
-    const patterns = [];
+  // If there is a separator at the end of the pattern then the pattern will only match directories.
+  pattern += pattern.endsWith('/') ? '**/' : '/**';
 
-    for (let pattern of section.patterns) {
-      const exists = seen.patterns.has(pattern);
-      seen.patterns.add(pattern);
+  // If not relative, the pattern can match any files and directories.
+  return relative ? pattern : `**/${pattern}`;
+};
 
-      if (options.onPattern) {
-        pattern = options.onPattern(pattern, section);
+const globs = (input, options = {}) => {
+  const parsed = parse(input, options);
+  const result = [];
+  let index = 0;
+
+  const patterns = parsed.patterns
+    .concat(options.ignore || [])
+    .concat((options.unignore || []).map(p => !p.startsWith('!') ? '!' + p : p));
+
+  const push = (prefix, pattern) => {
+    const prev = result[result.length - 1];
+    const type = prefix ? 'unignore' : 'ignore';
+
+    if (prev && prev.type === type) {
+      if (!prev.patterns.includes(pattern)) {
+        prev.patterns.push(pattern);
       }
+    } else {
+      result.push({ type, path: options.path || null, patterns: [pattern], index });
+      index++;
+    }
+  };
 
-      if (!exists && pattern !== false) {
-        patterns.push(pattern);
-      }
+  for (let pattern of patterns) {
+    let prefix = '';
+
+    // An optional prefix "!" which negates the pattern; any matching file excluded by
+    // a previous pattern will become included again
+    if (pattern.startsWith('!')) {
+      pattern = pattern.slice(1);
+      prefix = '!';
     }
 
-    seen.sections.set(section.name, section);
+    // add the raw pattern to the results
+    push(prefix, (pattern.startsWith('/') ? pattern.slice(1) : pattern));
 
-    if (patterns.length > 0) {
-      section.patterns = patterns;
-      sections.push(section);
-    }
+    // add the glob pattern to the results
+    push(prefix, glob(pattern));
   }
 
-  parsed.sections = sections;
-
-  if (options.stringify === false) {
-    return parsed;
-  }
-
-  return gitignore.stringify(parsed);
+  return result;
 };
 
 /**
  * Formats a .gitignore section
  */
 
-gitignore.format = section => {
-  const heading = section.name ? `# ${section.name}` : '';
-  return `${heading}\n${section.patterns.join('\n')}\n\n`;
+const formatSection = (section = {}) => {
+  const output = [section.comment || ''];
+
+  if (section.patterns?.length) {
+    output.push(section.patterns.join('\n'));
+    output.push('');
+  }
+
+  return output.join('\n');
 };
 
 /**
- * Stringify a .gitignore file from parsed sections.
- */
-
-gitignore.stringify = (sections = [], fn = gitignore.format) => {
-  if (sections.sections) sections = sections.sections;
-  let result = '';
-
-  for (const section of [].concat(sections)) result += fn(section);
-  return result.trim();
-};
-
-/**
- * Re-format a .gitignore file
+ * Format a .gitignore file from the given input or object from `.parse()`.
  * @param {String} input File path or contents.
  * @param {Object} options
- * @return {String} Returns re-formatted contents.
+ * @return {String} Returns formatted string.
  * @api public
  */
 
-gitignore.reformat = (input, options = {}) => {
-  const parsed = gitignore.parse(input, options);
-  const output = gitignore.stringify(parsed.sections, options);
+const format = (input, options = {}) => {
+  const parsed = parse(input, options);
 
-  if (isValidPath(input) && options.write === true) {
-    fs.writeFileSync(input, output);
+  const fn = options.formatSection || formatSection;
+  const sections = parsed.sections || parsed;
+  const output = [];
+
+  for (const section of [].concat(sections)) {
+    output.push(fn(section));
   }
 
-  return output;
+  return output.join('\n');
 };
 
+parse.file = parseFile;
+parse.parse = parse;
+parse.dedupe = dedupe;
+parse.format = format;
+parse.globs = globs;
+parse.formatSection = formatSection;
+parse.patterns = patterns;
+
 /**
- * Expose `gitignore`
+ * Expose `parse`
  */
 
-module.exports = gitignore;
+module.exports = parse;

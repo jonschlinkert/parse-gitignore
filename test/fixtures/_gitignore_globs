@@ -4,9 +4,19 @@ logs
 npm-debug.log
 yarn-debug.log
 yarn-error.log
+/*.foo
 
 # Runtime data
-pids
+pids/
+abc/**/xyz
+/other/
 *.pid
 *.seed
 *.pid.lock
+a/b/c
+a/b
+/a/b
+/a/b/c/
+a/b/
+b/
+b

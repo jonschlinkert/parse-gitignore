@@ -18,14 +18,15 @@
   ],
   "main": "index.js",
   "engines": {
-    "node": ">=8"
+    "node": ">=14"
   },
   "scripts": {
     "test": "mocha"
   },
   "devDependencies": {
     "gulp-format-md": "^2.0.0",
-    "mocha": "^8.0.1"
+    "matched": "^5.0.1",
+    "mocha": "^9.0.3"
   },
   "keywords": [
     "gitignore",
