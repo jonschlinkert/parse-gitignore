@@ -1,7 +1,7 @@
 {
   "name": "parse-gitignore",
   "description": "Parse a .gitignore or .npmignore file into an array of patterns.",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "homepage": "https://github.com/jonschlinkert/parse-gitignore",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "contributors": [
