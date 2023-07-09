@@ -33,7 +33,7 @@ const parse = (input, options = {}) => {
   let filepath = options.path;
 
   if (isParsed(input)) return input;
-  if (isValidPath(input) && fs.existsSync(input)) {
+  if (!(options.disablePathCheck || false) && isValidPath(input) && fs.existsSync(input)) {
     filepath = input;
     input = fs.readFileSync(input);
   }
