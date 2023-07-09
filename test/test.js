@@ -46,4 +46,12 @@ describe('gitignore', () => {
     const name = '_gitignore_multiline_comments';
     assert.equal(parse.format(fixture(name)), fixture(name));
   });
+
+  it('should not try to load ignored files as an ignorefile', () => {
+    // if our ignore only includes a relative file that happens to be valid (e.g. package.json)
+    const content = 'package.json';
+    // it should not path check (otherwise would fail)
+    const parsed = parse(content, { disablePathCheck: true });
+    assert.equal(parsed.patterns, content);
+  });
 });
